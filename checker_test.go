@@ -2,6 +2,7 @@ package csvchecker
 
 import (
 	"errors"
+	"io"
 	"reflect"
 	"strings"
 	"testing"
@@ -12,7 +13,7 @@ import (
 
 type CheckerTestSuite struct {
 	suite.Suite
-	checker   *checker
+	checker   *Checker
 	separator rune
 }
 
@@ -39,7 +40,9 @@ func (suite *CheckerTestSuite) TestCheckWithInvalidNumberRowsReturnsError() {
 	csv := `id;name;text
 	123;John;"hello"
 	432;Doe;"hello2";122`
-	errs := suite.checker.Check(strings.NewReader(csv))
+	var r io.Reader
+	r = strings.NewReader(csv)
+	errs := suite.checker.Check(&r)
 
 	suite.Len(errs, 1)
 	suite.IsType(new(rowError), errs[0])
@@ -52,7 +55,9 @@ func (suite *CheckerTestSuite) TestCheckWithHeaderNotChecksHeader() {
 	csv := `id;name;text
 	123;John;"hello"`
 
-	suite.checker.Check(strings.NewReader(csv))
+	var r io.Reader
+	r = strings.NewReader(csv)
+	suite.checker.Check(&r)
 
 	validatorMock.AssertNumberOfCalls(suite.Suite.T(), "Validate", 1)
 }
@@ -63,15 +68,18 @@ func (suite *CheckerTestSuite) TestCheckColumnValidationReturnsError() {
 	suite.checker.AddColum(NewColumn(1, validatorMock))
 	csv := `id;name;text
 	123;John;"hello"`
-	errs := suite.checker.Check(strings.NewReader(csv))
+
+	var r io.Reader
+	r = strings.NewReader(csv)
+	errs := suite.checker.Check(&r)
 
 	suite.Len(errs, 1)
 
 	testError := errs[0]
 	suite.IsType(new(colError), testError)
-	r := reflect.ValueOf(testError)
-	line := reflect.Indirect(r).FieldByName("line")
-	column := reflect.Indirect(r).FieldByName("col")
+	iErr := reflect.Indirect(reflect.ValueOf(testError))
+	line := iErr.FieldByName("line")
+	column := iErr.FieldByName("col")
 	suite.Equal(2, int(line.Int()))
 	suite.Equal(1, int(column.Int()))
 }

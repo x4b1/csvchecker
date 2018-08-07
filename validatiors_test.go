@@ -9,8 +9,8 @@ import (
 
 func TestCreateStringValidationWithDefaultValues(t *testing.T) {
 	v := StringValidation{}
-	assert.False(t, v.allowEmpty)
-	assert.Nil(t, v.inRange)
+	assert.False(t, v.AllowEmpty)
+	assert.Nil(t, v.InRange)
 }
 
 var validateStringErrorTests = []struct {
@@ -38,7 +38,7 @@ var validateStringCorrectTests = []struct {
 	validator StringValidation
 	str       string
 }{
-	{StringValidation{allowEmpty: true}, ""},
+	{StringValidation{AllowEmpty: true}, ""},
 	{StringValidation{false, &RangeValidation{2, 2}}, "ab"},
 }
 
@@ -52,7 +52,7 @@ func TestValidateStringValidationReturnNil(t *testing.T) {
 
 func TestCreateNumberValidationWithDefaultValues(t *testing.T) {
 	v := NumberValidation{}
-	assert.Nil(t, v.inRange)
+	assert.Nil(t, v.InRange)
 }
 
 var validateNumberErrorTests = []struct {
@@ -61,8 +61,8 @@ var validateNumberErrorTests = []struct {
 	expdErrStr string
 }{
 	{NumberValidation{}, "asdb123", "Value asdb123, is not a number"},
-	{NumberValidation{&RangeValidation{0, 2}}, "55", "Value 55, maximun value exceeded 2"},
-	{NumberValidation{&RangeValidation{-32, 2}}, "-55", "Value -55, minimum value exceeded -32"},
+	{NumberValidation{AllowEmpty: false, InRange: &RangeValidation{0, 2}}, "55", "Value 55, maximun value exceeded 2"},
+	{NumberValidation{AllowEmpty: false, InRange: &RangeValidation{-32, 2}}, "-55", "Value -55, minimum value exceeded -32"},
 }
 
 func TestValidateNumberValidationReturnError(t *testing.T) {
@@ -81,7 +81,8 @@ var validateNumberCorrectTests = []struct {
 	str       string
 }{
 	{NumberValidation{}, "32"},
-	{NumberValidation{&RangeValidation{2, 2}}, "2"},
+	{NumberValidation{AllowEmpty: true}, ""},
+	{NumberValidation{AllowEmpty: false, InRange: &RangeValidation{2, 2}}, "2"},
 }
 
 func TestValidateNumberValidationReturnNil(t *testing.T) {
@@ -94,7 +95,7 @@ func TestValidateNumberValidationReturnNil(t *testing.T) {
 
 func TestCreateRegexValidationWithDefaultValues(t *testing.T) {
 	v := RegexValidation{}
-	assert.IsType(t, regexp.Regexp{}, v.regex)
+	assert.IsType(t, regexp.Regexp{}, v.Regex)
 }
 
 func TestValidateRegexValidationReturnError(t *testing.T) {

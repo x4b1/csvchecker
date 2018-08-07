@@ -12,62 +12,69 @@ type Validator interface {
 }
 
 type RangeValidation struct {
-	min int
-	max int
+	Min int
+	Max int
 }
 
 type StringValidation struct {
-	allowEmpty bool
-	inRange    *RangeValidation
+	AllowEmpty bool
+	InRange    *RangeValidation
 }
 
 func (v *StringValidation) Validate(val string) error {
 	strLn := len(val)
-
-	if !v.allowEmpty && strLn < 1 {
+	if v.AllowEmpty && len(val) < 1 {
+		return nil
+	} else if !v.AllowEmpty && strLn < 1 {
 		return errors.New("Value can't be empty")
 	}
 
-	if v.inRange != nil && v.inRange.max < strLn {
-		return fmt.Errorf("Value %s, maximun length %d, %d given", val, v.inRange.max, strLn)
+	if v.InRange != nil && v.InRange.Max < strLn {
+		return fmt.Errorf("Value %s, maximun length %d, %d given", val, v.InRange.Max, strLn)
 	}
 
-	if v.inRange != nil && v.inRange.min > strLn {
-		return fmt.Errorf("Value %s, minimun length %d, %d given", val, v.inRange.min, strLn)
+	if v.InRange != nil && v.InRange.Min > strLn {
+		return fmt.Errorf("Value %s, minimun length %d, %d given", val, v.InRange.Min, strLn)
 	}
 
 	return nil
 }
 
 type NumberValidation struct {
-	inRange *RangeValidation
+	AllowEmpty bool
+	InRange    *RangeValidation
 }
 
 func (v *NumberValidation) Validate(val string) error {
+
+	if v.AllowEmpty && len(val) < 1 {
+		return nil
+	}
+
 	nVal, err := strconv.Atoi(val)
 
 	if err != nil {
 		return fmt.Errorf("Value %s, is not a number", val)
 	}
 
-	if v.inRange != nil && v.inRange.max < nVal {
-		return fmt.Errorf("Value %s, maximun value exceeded %d", val, v.inRange.max)
+	if v.InRange != nil && v.InRange.Max < nVal {
+		return fmt.Errorf("Value %s, maximun value exceeded %d", val, v.InRange.Max)
 	}
 
-	if v.inRange != nil && v.inRange.min > nVal {
-		return fmt.Errorf("Value %s, minimum value exceeded %d", val, v.inRange.min)
+	if v.InRange != nil && v.InRange.Min > nVal {
+		return fmt.Errorf("Value %s, minimum value exceeded %d", val, v.InRange.Min)
 	}
 
 	return nil
 }
 
 type RegexValidation struct {
-	regex regexp.Regexp
+	Regex regexp.Regexp
 }
 
 func (v *RegexValidation) Validate(val string) error {
-	if !v.regex.MatchString(val) {
-		return fmt.Errorf("Value %s, doesn't match with %s regex", val, v.regex.String())
+	if !v.Regex.MatchString(val) {
+		return fmt.Errorf("Value %s, doesn't match with %s regex", val, v.Regex.String())
 	}
 
 	return nil
