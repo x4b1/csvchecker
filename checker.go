@@ -24,7 +24,7 @@ func (c *Checker) AddColum(col *column) *Checker {
 	return c
 }
 
-func (c *Checker) Check(reader *io.Reader) []csvError {
+func (c *Checker) Check(reader io.Reader) []csvError {
 	var errors []csvError
 	lineNum := 0
 	r := c.getReader(reader)
@@ -70,8 +70,8 @@ func (c *Checker) checkLine(l []string, lNum int) []csvError {
 	return errors
 }
 
-func (c *Checker) getReader(reader *io.Reader) *csv.Reader {
-	r := csv.NewReader(*reader)
+func (c *Checker) getReader(reader io.Reader) *csv.Reader {
+	r := csv.NewReader(reader)
 	r.Comma = c.separator
 	r.LazyQuotes = true
 	return r

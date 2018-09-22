@@ -41,8 +41,6 @@ func (c *commandHandler) fromArgs(args []string) {
 
 	doctor := conf.createDoctor()
 
-	c.getFileReader(p[1])
-
 	errors := doctor.Check(c.getFileReader(p[1]))
 	if len(errors) > 0 {
 		for _, err := range errors {
@@ -88,7 +86,7 @@ func (c *commandHandler) processConfigurationFile(path string) *configuration {
 	return conf
 }
 
-func (c *commandHandler) getFileReader(path string) *io.Reader {
+func (c *commandHandler) getFileReader(path string) io.Reader {
 	var r io.Reader
 	var err error
 	r, err = os.Open(path)
@@ -97,7 +95,7 @@ func (c *commandHandler) getFileReader(path string) *io.Reader {
 		c.fail(err.Error())
 	}
 
-	return &r
+	return r
 }
 
 type configuration struct {
@@ -118,11 +116,11 @@ func (conf *configuration) createDoctor() *csvchecker.Checker {
 	return checker
 }
 
-func (c *configuration) validate() error {
-	if len(c.Separator) != 1 {
+func (conf *configuration) validate() error {
+	if len(conf.Separator) != 1 {
 		return errors.New("Invalid 'separator'")
 	}
-	for i, col := range c.Columns {
+	for i, col := range conf.Columns {
 		if col.Position < 1 {
 			return fmt.Errorf("Invalid 'position' in column %d", i+1)
 		}

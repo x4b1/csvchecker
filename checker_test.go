@@ -42,7 +42,7 @@ func (suite *CheckerTestSuite) TestCheckWithInvalidNumberRowsReturnsError() {
 	432;Doe;"hello2";122`
 	var r io.Reader
 	r = strings.NewReader(csv)
-	errs := suite.checker.Check(&r)
+	errs := suite.checker.Check(r)
 
 	suite.Len(errs, 1)
 	suite.IsType(new(rowError), errs[0])
@@ -57,7 +57,7 @@ func (suite *CheckerTestSuite) TestCheckWithHeaderNotChecksHeader() {
 
 	var r io.Reader
 	r = strings.NewReader(csv)
-	suite.checker.Check(&r)
+	suite.checker.Check(r)
 
 	validatorMock.AssertNumberOfCalls(suite.Suite.T(), "Validate", 1)
 }
@@ -71,7 +71,7 @@ func (suite *CheckerTestSuite) TestCheckColumnValidationReturnsError() {
 
 	var r io.Reader
 	r = strings.NewReader(csv)
-	errs := suite.checker.Check(&r)
+	errs := suite.checker.Check(r)
 
 	suite.Len(errs, 1)
 
