@@ -7,20 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateStringValidationWithDefaultValues(t *testing.T) {
-	v := StringValidation{}
-	assert.False(t, v.AllowEmpty)
-	assert.Nil(t, v.InRange)
-}
-
 var validateStringErrorTests = []struct {
-	validator  StringValidation
+	validator  *stringValidation
 	str        string
 	expdErrStr string
 }{
-	{StringValidation{}, "", "Value can't be empty"},
-	{StringValidation{false, &RangeValidation{0, 2}}, "abcd", "Value abcd, maximun length 2, 4 given"},
-	{StringValidation{false, &RangeValidation{2, 6}}, "a", "Value a, minimun length 2, 1 given"},
+	{NewStringValidation(false, nil), "", "Value can't be empty"},
+	{NewStringValidation(false, newRangeValidation(0, 2)), "abcd", "Value abcd, maximun length 2, 4 given"},
+	{NewStringValidation(false, newRangeValidation(2, 6)), "a", "Value a, minimun length 2, 1 given"},
 }
 
 func TestValidateStringValidationReturnError(t *testing.T) {
@@ -35,11 +29,11 @@ func TestValidateStringValidationReturnError(t *testing.T) {
 }
 
 var validateStringCorrectTests = []struct {
-	validator StringValidation
+	validator *stringValidation
 	str       string
 }{
-	{StringValidation{AllowEmpty: true}, ""},
-	{StringValidation{false, &RangeValidation{2, 2}}, "ab"},
+	{NewStringValidation(true, nil), ""},
+	{NewStringValidation(false, newRangeValidation(2, 2)), "ab"},
 }
 
 func TestValidateStringValidationReturnNil(t *testing.T) {
@@ -50,19 +44,14 @@ func TestValidateStringValidationReturnNil(t *testing.T) {
 	}
 }
 
-func TestCreateNumberValidationWithDefaultValues(t *testing.T) {
-	v := NumberValidation{}
-	assert.Nil(t, v.InRange)
-}
-
 var validateNumberErrorTests = []struct {
-	validator  NumberValidation
+	validator  *numberValidation
 	str        string
 	expdErrStr string
 }{
-	{NumberValidation{}, "asdb123", "Value asdb123, is not a number"},
-	{NumberValidation{AllowEmpty: false, InRange: &RangeValidation{0, 2}}, "55", "Value 55, maximun value exceeded 2"},
-	{NumberValidation{AllowEmpty: false, InRange: &RangeValidation{-32, 2}}, "-55", "Value -55, minimum value exceeded -32"},
+	{NewNumberValidation(false, nil), "asdb123", "Value asdb123, is not a number"},
+	{NewNumberValidation(false, newRangeValidation(0, 2)), "55", "Value 55, maximun value exceeded 2"},
+	{NewNumberValidation(false, newRangeValidation(-32, 2)), "-55", "Value -55, minimum value exceeded -32"},
 }
 
 func TestValidateNumberValidationReturnError(t *testing.T) {
@@ -77,12 +66,12 @@ func TestValidateNumberValidationReturnError(t *testing.T) {
 }
 
 var validateNumberCorrectTests = []struct {
-	validator NumberValidation
+	validator *numberValidation
 	str       string
 }{
-	{NumberValidation{}, "32"},
-	{NumberValidation{AllowEmpty: true}, ""},
-	{NumberValidation{AllowEmpty: false, InRange: &RangeValidation{2, 2}}, "2"},
+	{NewNumberValidation(false, nil), "32"},
+	{NewNumberValidation(true, nil), ""},
+	{NewNumberValidation(false, newRangeValidation(2, 2)), "2"},
 }
 
 func TestValidateNumberValidationReturnNil(t *testing.T) {
@@ -93,21 +82,16 @@ func TestValidateNumberValidationReturnNil(t *testing.T) {
 	}
 }
 
-func TestCreateRegexValidationWithDefaultValues(t *testing.T) {
-	v := RegexValidation{}
-	assert.IsType(t, regexp.Regexp{}, v.Regex)
-}
-
-func TestValidateRegexValidationReturnError(t *testing.T) {
+func TestValidateregexpValidationReturnError(t *testing.T) {
 	rgx := regexp.MustCompile("/[A-B]/i")
-	v := RegexValidation{*rgx}
+	v := NewRegexpValidation(rgx)
 
 	assert.Error(t, v.Validate("Hello"))
 }
 
-func TestValidateRegexValidationReturnNil(t *testing.T) {
+func TestValidateregexpValidationReturnNil(t *testing.T) {
 	rgx := regexp.MustCompile("^correct.*.string$")
-	v := RegexValidation{*rgx}
+	v := NewRegexpValidation(rgx)
 
 	assert.Nil(t, v.Validate("correct awesome string"))
 }

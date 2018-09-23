@@ -8,7 +8,7 @@ import (
 
 func TestColumnCreatedWithPositionAndWithOutValidator(t *testing.T) {
 	pos := 2
-	dummyValidator := new(StringValidation)
+	dummyValidator := new(stringValidation)
 	column := NewColumn(pos, dummyValidator)
 	assert.Equal(t, pos, column.position)
 	assert.IsType(t, dummyValidator, column.validator)
