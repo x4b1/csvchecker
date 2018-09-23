@@ -8,7 +8,7 @@ import (
 )
 
 var validateStringErrorTests = []struct {
-	validator  *stringValidation
+	validator  *StringValidation
 	str        string
 	expdErrStr string
 }{
@@ -29,7 +29,7 @@ func TestValidateStringValidationReturnError(t *testing.T) {
 }
 
 var validateStringCorrectTests = []struct {
-	validator *stringValidation
+	validator *StringValidation
 	str       string
 }{
 	{NewStringValidation(true, nil), ""},
@@ -45,7 +45,7 @@ func TestValidateStringValidationReturnNil(t *testing.T) {
 }
 
 var validateNumberErrorTests = []struct {
-	validator  *numberValidation
+	validator  *NumberValidation
 	str        string
 	expdErrStr string
 }{
@@ -66,7 +66,7 @@ func TestValidateNumberValidationReturnError(t *testing.T) {
 }
 
 var validateNumberCorrectTests = []struct {
-	validator *numberValidation
+	validator *NumberValidation
 	str       string
 }{
 	{NewNumberValidation(false, nil), "32"},
@@ -82,14 +82,14 @@ func TestValidateNumberValidationReturnNil(t *testing.T) {
 	}
 }
 
-func TestValidateregexpValidationReturnError(t *testing.T) {
+func TestValidateRegexpValidationReturnError(t *testing.T) {
 	rgx := regexp.MustCompile("/[A-B]/i")
 	v := NewRegexpValidation(rgx)
 
 	assert.Error(t, v.Validate("Hello"))
 }
 
-func TestValidateregexpValidationReturnNil(t *testing.T) {
+func TestValidateRegexpValidationReturnNil(t *testing.T) {
 	rgx := regexp.MustCompile("^correct.*.string$")
 	v := NewRegexpValidation(rgx)
 
@@ -97,7 +97,7 @@ func TestValidateregexpValidationReturnNil(t *testing.T) {
 }
 
 var validateListValuesErrorTests = []struct {
-	validator  *listValuesValidator
+	validator  *ListValuesValidator
 	str        string
 	expdErrStr string
 }{
@@ -117,7 +117,7 @@ func TestValidateListValuesValidationReturnError(t *testing.T) {
 }
 
 var validateListValuesCorrectTests = []struct {
-	validator *listValuesValidator
+	validator *ListValuesValidator
 	str       string
 }{
 	{NewListValuesValidator(true, nil), ""},

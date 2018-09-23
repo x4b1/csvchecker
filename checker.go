@@ -8,7 +8,7 @@ import (
 type Checker struct {
 	separator  rune
 	withHeader bool
-	columns    []*column
+	columns    []*Column
 }
 
 func NewChecker(separator rune, withHeader bool) *Checker {
@@ -18,14 +18,14 @@ func NewChecker(separator rune, withHeader bool) *Checker {
 	}
 }
 
-func (c *Checker) AddColum(col *column) *Checker {
+func (c *Checker) AddColum(col *Column) *Checker {
 	c.columns = append(c.columns, col)
 
 	return c
 }
 
-func (c *Checker) Check(reader io.Reader) []csvError {
-	var errors []csvError
+func (c *Checker) Check(reader io.Reader) []CSVError {
+	var errors []CSVError
 	lineNum := 0
 	r := c.getReader(reader)
 
@@ -51,8 +51,8 @@ func (c *Checker) Check(reader io.Reader) []csvError {
 	return errors
 }
 
-func (c *Checker) checkLine(l []string, lNum int) []csvError {
-	var errors []csvError
+func (c *Checker) checkLine(l []string, lNum int) []CSVError {
+	var errors []CSVError
 	for _, col := range c.columns {
 		pos := col.position - 1
 		if pos >= 0 && pos < len(l) {

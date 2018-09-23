@@ -7,35 +7,41 @@ import (
 	"strconv"
 )
 
+// Validator is an interface that should implements all validators
 type Validator interface {
 	Validate(string) error
 }
 
-type rangeValidation struct {
+// RangeValidation represents de minimun and maximun values in a validation
+type RangeValidation struct {
 	min int
 	max int
 }
 
-func NewRangeValidation(min, max int) *rangeValidation {
-	return &rangeValidation{
+// NewRangeValidation creates a new instance of RangeValidation
+func NewRangeValidation(min, max int) *RangeValidation {
+	return &RangeValidation{
 		min: min,
 		max: max,
 	}
 }
 
-type stringValidation struct {
+// StringValidation is the struct to check string fields
+type StringValidation struct {
 	allowEmpty bool
-	inRange    *rangeValidation
+	inRange    *RangeValidation
 }
 
-func NewStringValidation(allowEmpty bool, inRange *rangeValidation) *stringValidation {
-	return &stringValidation{
+// NewStringValidation creates a new instance of StringValidation
+func NewStringValidation(allowEmpty bool, inRange *RangeValidation) *StringValidation {
+	return &StringValidation{
 		allowEmpty: allowEmpty,
 		inRange:    inRange,
 	}
 }
 
-func (v *stringValidation) Validate(val string) error {
+// Validate applies the rules configured in validator
+func (v *StringValidation) Validate(val string) error {
 	strLn := len(val)
 	if v.allowEmpty && strLn < 1 {
 		return nil
@@ -54,19 +60,22 @@ func (v *stringValidation) Validate(val string) error {
 	return nil
 }
 
-type numberValidation struct {
+// NumberValidation is the struct to check number fields
+type NumberValidation struct {
 	allowEmpty bool
-	inRange    *rangeValidation
+	inRange    *RangeValidation
 }
 
-func NewNumberValidation(allowEmpty bool, inRange *rangeValidation) *numberValidation {
-	return &numberValidation{
+// NewNumberValidation creates a new instance of NumberValidation
+func NewNumberValidation(allowEmpty bool, inRange *RangeValidation) *NumberValidation {
+	return &NumberValidation{
 		allowEmpty: allowEmpty,
 		inRange:    inRange,
 	}
 }
 
-func (v *numberValidation) Validate(val string) error {
+// Validate applies the rules configured in validator
+func (v *NumberValidation) Validate(val string) error {
 
 	if v.allowEmpty && len(val) < 1 {
 		return nil
@@ -89,15 +98,18 @@ func (v *numberValidation) Validate(val string) error {
 	return nil
 }
 
-type regexpValidation struct {
+// RegexpValidation is the struct to check fields given a regexp
+type RegexpValidation struct {
 	regexp *regexp.Regexp
 }
 
-func NewRegexpValidation(regexp *regexp.Regexp) *regexpValidation {
-	return &regexpValidation{regexp: regexp}
+// NewRegexpValidation creates a new instance of RegexpValidation
+func NewRegexpValidation(regexp *regexp.Regexp) *RegexpValidation {
+	return &RegexpValidation{regexp: regexp}
 }
 
-func (v *regexpValidation) Validate(val string) error {
+// Validate applies the rules configured in validator
+func (v *RegexpValidation) Validate(val string) error {
 	if !v.regexp.MatchString(val) {
 		return fmt.Errorf("Value %s, doesn't match with %s regex", val, v.regexp.String())
 	}
@@ -105,19 +117,22 @@ func (v *regexpValidation) Validate(val string) error {
 	return nil
 }
 
-type listValuesValidator struct {
+// ListValuesValidator is the struct to check string fields that must match with given values
+type ListValuesValidator struct {
 	allowEmpty bool
 	values     []string
 }
 
-func NewListValuesValidator(allowEmpty bool, values []string) *listValuesValidator {
-	return &listValuesValidator{
+// NewListValuesValidator creates a new instance of ListValuesValidator
+func NewListValuesValidator(allowEmpty bool, values []string) *ListValuesValidator {
+	return &ListValuesValidator{
 		allowEmpty: allowEmpty,
 		values:     values,
 	}
 }
 
-func (v *listValuesValidator) Validate(val string) error {
+// Validate applies the rules configured in validator
+func (v *ListValuesValidator) Validate(val string) error {
 	strLn := len(val)
 	if v.allowEmpty && strLn < 1 {
 		return nil

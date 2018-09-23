@@ -2,7 +2,7 @@ package csvchecker
 
 import "fmt"
 
-type csvError interface {
+type CSVError interface {
 	ToString() string
 }
 
