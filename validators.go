@@ -37,7 +37,7 @@ func NewStringValidation(allowEmpty bool, inRange *rangeValidation) *stringValid
 
 func (v *stringValidation) Validate(val string) error {
 	strLn := len(val)
-	if v.allowEmpty && len(val) < 1 {
+	if v.allowEmpty && strLn < 1 {
 		return nil
 	} else if !v.allowEmpty && strLn < 1 {
 		return errors.New("Value can't be empty")
@@ -103,4 +103,33 @@ func (v *regexpValidation) Validate(val string) error {
 	}
 
 	return nil
+}
+
+type listValuesValidator struct {
+	allowEmpty bool
+	values     []string
+}
+
+func NewListValuesValidator(allowEmpty bool, values []string) *listValuesValidator {
+	return &listValuesValidator{
+		allowEmpty: allowEmpty,
+		values:     values,
+	}
+}
+
+func (v *listValuesValidator) Validate(val string) error {
+	strLn := len(val)
+	if v.allowEmpty && strLn < 1 {
+		return nil
+	} else if !v.allowEmpty && strLn < 1 {
+		return errors.New("Value can't be empty")
+	}
+
+	for _, value := range v.values {
+		if val == value {
+			return nil
+		}
+	}
+
+	return errors.New("Value is not in the list")
 }

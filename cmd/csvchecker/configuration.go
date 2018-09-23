@@ -9,9 +9,10 @@ import (
 )
 
 const (
-	stringValidator = "string"
-	numberValidator = "number"
-	regexpValidator = "regexp"
+	stringValidator     = "string"
+	numberValidator     = "number"
+	regexpValidator     = "regexp"
+	listValuesValidator = "list"
 )
 
 type configuration struct {
@@ -54,11 +55,12 @@ type validatorConfiguration struct {
 		Min int `json:"min"`
 		Max int `json:"max"`
 	} `json:"range"`
-	Regex string `json:"regexp"`
+	Regex string   `json:"regexp"`
+	List  []string `json:"list"`
 }
 
 func (c *validatorConfiguration) existValidator() bool {
-	for _, a := range []string{stringValidator, numberValidator, regexpValidator} {
+	for _, a := range []string{stringValidator, numberValidator, regexpValidator, listValuesValidator} {
 		if a == c.ValidatorType {
 			return true
 		}
@@ -80,6 +82,8 @@ func (c *validatorConfiguration) createValidator() csvchecker.Validator {
 		return csvchecker.NewNumberValidation(c.AllowEmpty, nil)
 	case regexpValidator:
 		return csvchecker.NewRegexpValidation(regexp.MustCompile(c.Regex))
+	case listValuesValidator:
+		return csvchecker.NewListValuesValidator(c.AllowEmpty, c.List)
 	}
 
 	return nil

@@ -75,12 +75,22 @@ Configuration file must have the folling structure:
     }
 }
 ```
-
 ### regexp validator
 ```json
 {
     "type": "regexp",
     "regexp": "/+d/"
+}
+```
+
+### list values validator
+```json
+{
+    "type": "list",
+    "allowEmpty": true,
+    "list": [
+        "test"
+    ]
 }
 ```
 
