@@ -12,12 +12,17 @@ As mentioned this tool can be used as a package to use in your go project or as 
 
 ## Package
 ```go
-checker := csvchecker.NewChecker(",", true)
+checker := csvchecker.NewChecker(',', true)
 
-checker.AddColum(csvchecker.NewColumn(1, &csvchecker.StringValidation{
-    AllowEmpty: true,
-    InRange:    &csvchecker.RangeValidation{Min: 1, Max: 5},
-}))
+checker.AddColum(
+	csvchecker.NewColumn(
+		1,
+		csvchecker.NewStringValidation(
+			true,
+			csvchecker.NewRangeValidation(1, 5),
+		),
+	),
+)
 
 reader := strings.NewReader(`column1;colum2
 value1;value2
@@ -36,14 +41,12 @@ Configuration file must have the folling structure:
 
 ```json
 {
-    "separator": ";", //Collumns separator
-    "withHeader": true, //Boolean, if your files first line is the header
+    "separator": ";",
+    "withHeader": true,
     "columns": [
         {
-            "position": 1, //Position of the column to be checked
-            "validation": {
-                //Depending on the validator type this field will have different fields
-            }
+            "position": 1,
+            "validation": {}
         }
     ]
 }
@@ -53,9 +56,8 @@ Configuration file must have the folling structure:
 ```json
 {
     "type": "string",
-    "allowEmpty": true, //If field in the column can be empty
-    "CheckRange": {
-        //if defined will be check the length of the string
+    "allowEmpty": true,
+    "range": {
         "min": 2,
         "max": 5
     }
@@ -66,9 +68,8 @@ Configuration file must have the folling structure:
 ```json
 {
     "type": "number",
-    "allowEmpty": true, //If field in the column can be empty
-    "CheckRange": {
-        //if defined will be check the value of the number
+    "allowEmpty": true,
+    "range": {
         "min": 2,
         "max": 5
     }
@@ -79,7 +80,7 @@ Configuration file must have the folling structure:
 ```json
 {
     "type": "regexp",
-    "Regex": "/+d/" //Regexp expression that will be applied to validate column. 
+    "regexp": "/+d/"
 }
 ```
 

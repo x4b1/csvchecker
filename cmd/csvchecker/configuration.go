@@ -54,7 +54,7 @@ type validatorConfiguration struct {
 		Min int `json:"min"`
 		Max int `json:"max"`
 	} `json:"range"`
-	Regex string
+	Regex string `json:"regexp"`
 }
 
 func (c *validatorConfiguration) existValidator() bool {
